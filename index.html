@@ -32,7 +32,7 @@
       --popup-overlay-bg: rgba(0,0,0,0.75);
       --close-btn-bg: #ff6b6b;
       --close-btn-hover-bg: #ee5253;
-      --controls-bg: rgba(0, 0, 0, 0.7); /* For playback controls */
+      --controls-bg: rgba(0, 0, 0, 0.7);
       --controls-text: #fff;
     }
 
@@ -75,6 +75,120 @@
       padding: 20px;
       transition: background 0.3s ease, color 0.3s ease;
     }
+
+    /* Password Screen Styles */
+    #passwordScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .password-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      text-align: center;
+      min-width: 300px;
+      max-width: 400px;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .password-container h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 1.8em;
+      font-weight: 600;
+    }
+
+    .password-container p {
+      color: #666;
+      margin-bottom: 25px;
+      font-size: 1em;
+      line-height: 1.5;
+    }
+
+    #passwordInput {
+      width: 80%;
+      padding: 15px 20px;
+      border: 2px solid #ddd;
+      border-radius: 30px;
+      font-size: 1.1em;
+      text-align: center;
+      margin-bottom: 20px;
+      outline: none;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    #passwordInput:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+    }
+
+    #submitPassword {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 30px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 600;
+      min-width: 120px;
+    }
+
+    #submitPassword:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    #submitPassword:active {
+      transform: translateY(0);
+    }
+
+    .error-message {
+      color: #e74c3c;
+      margin-top: 15px;
+      font-size: 0.95em;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .error-message.show {
+      opacity: 1;
+    }
+
+    .password-hint {
+      color: #888;
+      font-size: 0.85em;
+      margin-top: 20px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 10px;
+    }
+
     header {
       margin-bottom: 30px;
       display: flex;
@@ -108,7 +222,7 @@
     }
     .search-container {
       flex-shrink: 0;
-      display: flex; /* To align search and dark mode toggle */
+      display: flex;
       align-items: center;
       gap: 15px;
     }
@@ -154,80 +268,77 @@
       text-align: left;
     }
 
-    /* Updated Subject Section (Folder) Styles */
     .subject-section {
       background: var(--subject-section-bg);
-      border-radius: 15px; /* Keep rounded corners for a softer look, or change to 0 for sharp square */
-      margin-bottom: 20px; /* Reduced margin for tighter grouping */
-      padding: 0; /* Remove padding from the section itself */
+      border-radius: 15px;
+      margin-bottom: 20px;
+      padding: 0;
       box-shadow: 0 8px 25px rgba(0,0,0,0.1);
       border: 1px solid var(--lecture-card-border);
       transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-      overflow: hidden; /* Ensures content doesn't spill out when collapsed */
+      overflow: hidden;
     }
 
     .subject-section h2 {
-      font-size: 1.8em; /* Slightly smaller for a folder title */
+      font-size: 1.8em;
       color: var(--subject-header-color);
-      margin: 0; /* Remove default margin */
-      padding: 15px 25px; /* Padding for the header itself */
-      border-bottom: none; /* Remove border from header */
+      margin: 0;
+      padding: 15px 25px;
+      border-bottom: none;
       cursor: pointer;
       transition: background 0.3s ease, color 0.3s ease;
       font-weight: 600;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--subject-header-color); /* Background for the folder header */
-      color: white; /* Text color for the folder header */
-      border-radius: 15px 15px 0 0; /* Rounded top corners */
+      background: var(--subject-header-color);
+      color: white;
+      border-radius: 15px 15px 0 0;
     }
 
     .subject-section h2:hover {
-      background: var(--play-btn-hover-bg); /* Slightly darker on hover */
+      background: var(--play-btn-hover-bg);
       color: white;
     }
 
     .subject-section h2::after {
-      content: '+'; /* Plus sign for collapsed state */
+      content: '+';
       font-size: 1.2em;
       transition: transform 0.3s ease;
     }
 
     .subject-section h2.expanded::after {
-      content: '-'; /* Minus sign for expanded state */
-      transform: rotate(0deg); /* No rotation needed for +/- */
+      content: '-';
+      transform: rotate(0deg);
     }
 
     .subject-content {
       display: block;
-      padding: 15px 25px; /* Add padding to the content area */
-      border-top: 1px solid var(--subject-header-border); /* Separator for content */
-      background: var(--subject-section-bg); /* Background for content */
-      transition: max-height 0.5s ease-out, opacity 0.5s ease-out; /* Smooth transition for collapse/expand */
-      max-height: 1000px; /* Arbitrarily large value for expanded state */
+      padding: 15px 25px;
+      border-top: 1px solid var(--subject-header-border);
+      background: var(--subject-section-bg);
+      transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
+      max-height: 1000px;
       opacity: 1;
       visibility: visible;
-      /* Added for scrollbar */
-      max-height: 400px; /* Adjust this value as needed */
+      max-height: 400px;
       overflow-y: auto;
     }
 
     .subject-content.hidden {
-      max-height: 0; /* Collapse height */
+      max-height: 0;
       opacity: 0;
       visibility: hidden;
       padding-top: 0;
       padding-bottom: 0;
-      border-top: none; /* Remove border when hidden */
+      border-top: none;
     }
 
-    /* Adjust lecture card margin for better spacing within folders */
     .lecture-card {
       background: var(--lecture-card-bg);
-      margin: 10px 0; /* Slightly reduced margin */
+      margin: 10px 0;
       padding: 18px;
-      border-radius: 8px; /* Slightly smaller border-radius for cards inside folders */
+      border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.07);
       display: flex;
       justify-content: space-between;
@@ -303,7 +414,7 @@
       transition: background 0.3s ease;
     }
     #popupPlayer {
-      display: none; /* Hidden by default */
+      display: none;
       position: fixed;
       top: 50%;
       left: 50%;
@@ -319,7 +430,7 @@
       animation: fadeIn 0.3s ease;
       justify-content: center;
       align-items: center;
-      flex-direction: column; /* To stack video and controls */
+      flex-direction: column;
       box-sizing: border-box;
     }
     #popupPlayer video,
@@ -340,7 +451,7 @@
       padding: 10px 20px;
       box-sizing: border-box;
       display: flex;
-      justify-content: flex-end; /* Align controls to the right */
+      justify-content: flex-end;
       align-items: center;
       gap: 15px;
       color: var(--controls-text);
@@ -357,7 +468,7 @@
       padding: 5px 8px;
       font-size: 0.9em;
       cursor: pointer;
-      -webkit-appearance: none; /* Remove default dropdown arrow */
+      -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
       background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M287%2C197.9L159.3%2C69.2c-3.7-3.7-9.7-3.7-13.4%2C0L5.4%2C197.9c-3.7%2C3.7-3.7%2C9.7%2C0%2C13.4l22.7%2C22.7c3.7%2C3.7%2C9.7%2C3.7%2C13.4%2C0l100.4-100.4l100.4%2C100.4c3.7%2C3.7%2C9.7%2C3.7%2C13.4%2C0l22.7-22.7C290.7%2C207.6%2C290.7%2C201.6%2C287%2C197.9z%22%2F%3E%3C%2Fsvg%3E');
@@ -366,10 +477,9 @@
       background-size: 12px auto;
     }
     .player-controls select option {
-      background: var(--controls-bg); /* Ensure options are readable in dark mode */
+      background: var(--controls-bg);
       color: var(--controls-text);
     }
-
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translate(-50%, -48%); }
@@ -402,6 +512,16 @@
 
     /* Responsive adjustments */
     @media (max-width: 768px) {
+      .password-container {
+        padding: 30px 20px;
+        margin: 20px;
+        min-width: auto;
+      }
+
+      #passwordInput {
+        width: 90%;
+      }
+
       header {
         flex-direction: column;
         align-items: center;
@@ -429,15 +549,15 @@
         width: calc(100% - 40px);
       }
       .subject-section {
-        padding: 0; /* No padding for section on mobile */
+        padding: 0;
       }
       .subject-section h2 {
         font-size: 1.4em;
-        padding: 12px 20px; /* Padding for header on mobile */
+        padding: 12px 20px;
       }
       .subject-content {
-        padding: 10px 20px; /* Padding for content on mobile */
-        max-height: 300px; /* Adjust for mobile if needed */
+        padding: 10px 20px;
+        max-height: 300px;
       }
       .lecture-card {
         flex-direction: column;
@@ -482,11 +602,26 @@
 </head>
 <body>
 
-  <!-- Main Content (Always Visible) -->
-  <div id="mainContent">
+  <!-- Password Screen -->
+  <div id="passwordScreen">
+    <div class="password-container">
+      <h2>Access Required</h2>
+      <p>Please enter the password to access Achiever Online Dropper Batch lectures</p>
+      <input type="password" id="passwordInput" placeholder="Enter password" maxlength="50">
+      <br>
+      <button id="submitPassword">Enter</button>
+      <div id="errorMessage" class="error-message">Incorrect password. Please try again.</div>
+      <div class="password-hint">
+        Hint: Related to a popular electric-type Pokemon
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content (Hidden Initially) -->
+  <div id="mainContent" style="display: none;">
     <header>
       <div class="header-left">
-        <div style="font-size: 0.9em; color: var(--lecture-date-color); margin-bottom: 5px; transition: color 0.3s ease;">Made With ❤ by PIKACHU</div>
+        <div style="font-size: 0.9em; color: var(--lecture-date-color); margin-bottom: 5px; transition: color 0.3s ease;">Made With Love by PIKACHU</div>
         <h1>Achiever Online Dropper Batch</h1>
       </div>
       <div class="search-container">
@@ -523,10 +658,46 @@
   </div>
 
   <script>
-    let lecturesData = []; // This will be populated from lecture.json
+    // Password functionality
+    const correctPassword = "pikachu123";
+    const passwordScreen = document.getElementById("passwordScreen");
+    const mainContent = document.getElementById("mainContent");
+    const passwordInput = document.getElementById("passwordInput");
+    const submitButton = document.getElementById("submitPassword");
+    const errorMessage = document.getElementById("errorMessage");
+
+    function checkPassword() {
+      const enteredPassword = passwordInput.value.trim();
+      
+      if (enteredPassword === correctPassword) {
+        passwordScreen.style.display = "none";
+        mainContent.style.display = "block";
+        // Load lectures after successful password entry
+        loadAndRenderLectures();
+      } else {
+        errorMessage.classList.add("show");
+        passwordInput.value = "";
+        passwordInput.style.borderColor = "#e74c3c";
+        
+        setTimeout(() => {
+          errorMessage.classList.remove("show");
+          passwordInput.style.borderColor = "#ddd";
+        }, 3000);
+      }
+    }
+
+    submitButton.addEventListener("click", checkPassword);
+    passwordInput.addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        checkPassword();
+      }
+    });
+
+    // Main application variables
+    let lecturesData = [];
     const lecturesContainer = document.getElementById("lectures");
     const searchInput = document.getElementById("searchInput");
-    const subjectSections = {}; // To store references to subject content divs
+    const subjectSections = {};
     const darkModeToggle = document.getElementById("darkModeToggle");
     const playbackSpeedSelect = document.getElementById("playbackSpeed");
     const videoPlayer = document.getElementById("videoPlayer");
@@ -540,7 +711,7 @@
       if (title.startsWith("Inorganic Chemistry")) return "Inorganic Chemistry";
       if (title.startsWith("Zoology")) return "Zoology";
       if (title.startsWith("Botany")) return "Botany";
-      return "Other Lectures"; // Fallback for titles that don't match
+      return "Other Lectures";
     }
 
     // Function to fetch and render lectures
@@ -560,9 +731,7 @@
 
     // Render all lectures grouped by subject
     function renderLectures(lecturesToRender) {
-      // Clear existing content
       lecturesContainer.innerHTML = '';
-      // Clear subjectSections object to prevent old references
       for (const key in subjectSections) {
         if (subjectSections.hasOwnProperty(key)) {
           delete subjectSections[key];
@@ -572,7 +741,6 @@
       const sortedLectures = [...lecturesToRender].sort((a, b) => {
         const subjectA = getSubjectName(a.title);
         const subjectB = getSubjectName(b.title);
-        // Define a custom order for subjects
         const order = ["Physics 11th", "Physics 12th", "Organic Chemistry", "Inorganic Chemistry", "Zoology", "Botany", "Other Lectures"];
         return order.indexOf(subjectA) - order.indexOf(subjectB);
       });
@@ -581,21 +749,20 @@
         const subjectName = getSubjectName(lec.title);
 
         if (!subjectSections[subjectName]) {
-          // Create a new subject section if it doesn't exist
           const subjectSectionDiv = document.createElement("div");
           subjectSectionDiv.className = "subject-section";
 
           const subjectHeader = document.createElement("h2");
           subjectHeader.textContent = subjectName;
-          subjectHeader.onclick = () => toggleSubjectSection(subjectSectionDiv); // Add click handler for collapsing
+          subjectHeader.onclick = () => toggleSubjectSection(subjectSectionDiv);
           subjectSectionDiv.appendChild(subjectHeader);
 
           const subjectContentDiv = document.createElement("div");
-          subjectContentDiv.className = "subject-content hidden"; // Initially hidden
+          subjectContentDiv.className = "subject-content hidden";
           subjectSectionDiv.appendChild(subjectContentDiv);
 
           lecturesContainer.appendChild(subjectSectionDiv);
-          subjectSections[subjectName] = subjectContentDiv; // Store the content div
+          subjectSections[subjectName] = subjectContentDiv;
         }
 
         const card = document.createElement("div");
@@ -626,7 +793,7 @@
 
         card.appendChild(info);
         card.appendChild(btnGroup);
-        subjectSections[subjectName].appendChild(card); // Append card to the correct subject content div
+        subjectSections[subjectName].appendChild(card);
       });
     }
 
@@ -638,31 +805,27 @@
       allLectureCards.forEach(card => {
         const title = card.querySelector("h3").textContent.toLowerCase();
         if (title.includes(searchTerm)) {
-          card.style.display = "flex"; // Show the card
-          // Ensure parent subject section is visible and expanded if a card matches
+          card.style.display = "flex";
           const parentContent = card.closest('.subject-content');
           if (parentContent && parentContent.classList.contains('hidden')) {
             parentContent.classList.remove('hidden');
-            parentContent.previousElementSibling.classList.add('expanded'); // Add expanded class to h2
+            parentContent.previousElementSibling.classList.add('expanded');
           }
           const parentSection = card.closest('.subject-section');
           if (parentSection) {
             parentSection.style.display = "block";
           }
         } else {
-          card.style.display = "none"; // Hide the card
+          card.style.display = "none";
         }
       });
 
-      // After filtering, check if any cards are visible in a subject section
-      // If all cards in a section are hidden, hide the section itself
       document.querySelectorAll(".subject-section").forEach(section => {
         const visibleCardsInThisSection = section.querySelectorAll(".lecture-card[style*='display: flex']").length;
         if (visibleCardsInThisSection === 0 && searchTerm !== "") {
           section.style.display = "none";
         } else {
           section.style.display = "block";
-          // If search term is empty, ensure all sections are collapsed again
           if (searchTerm === "") {
             const content = section.querySelector(".subject-content");
             const header = section.querySelector("h2");
@@ -675,14 +838,13 @@
       });
     });
 
-    // Collapsible subject sections (optional, but good for long lists)
+    // Collapsible subject sections
     function toggleSubjectSection(sectionDiv) {
       const content = sectionDiv.querySelector(".subject-content");
       const header = sectionDiv.querySelector("h2");
       content.classList.toggle("hidden");
-      header.classList.toggle("expanded"); // Toggle expanded class on header for +/- sign
+      header.classList.toggle("expanded");
     }
-
 
     const popup = document.getElementById("popupPlayer");
     const overlay = document.getElementById("popupOverlay");
@@ -690,7 +852,7 @@
 
     function openPopup(url) {
       overlay.style.display = 'block';
-      popup.style.display = 'flex'; // Set display to flex to show popup
+      popup.style.display = 'flex';
       playSource(url);
     }
 
@@ -698,31 +860,29 @@
       popup.style.display = 'none';
       overlay.style.display = 'none';
       videoPlayer.pause();
-      videoPlayer.removeAttribute('src'); // Clear HLS source
-      if (Hls.isSupported()) { // Destroy HLS instance if it exists
+      videoPlayer.removeAttribute('src');
+      if (Hls.isSupported()) {
         if (videoPlayer._hls) {
           videoPlayer._hls.destroy();
           videoPlayer._hls = null;
         }
       }
       ytPlayer.src = '';
-      playbackSpeedSelect.value = "1"; // Reset speed to normal
+      playbackSpeedSelect.value = "1";
     }
 
     closeBtn.onclick = closePopup;
     overlay.onclick = closePopup;
 
     function playSource(url) {
-      // Reset players
       videoPlayer.style.display = 'none';
       ytPlayer.style.display = 'none';
       videoPlayer.src = '';
       ytPlayer.src = '';
-      playbackSpeedSelect.style.display = 'none'; // Hide speed control by default
+      playbackSpeedSelect.style.display = 'none';
 
       if (url.includes('youtube.com/embed/') || url.includes('youtu.be/')) {
         ytPlayer.style.display = 'block';
-        // Ensure the URL is in the correct embed format for YouTube
         let embedUrl = url;
         if (url.includes('youtu.be/')) {
             const videoId = url.split('youtu.be/')[1].split('?')[0];
@@ -731,24 +891,20 @@
             const videoId = url.split('watch?v=')[1].split('&')[0];
             embedUrl = `https://www.youtube.com/embed/${videoId}`;
         }
-        // Add modestbranding and rel=0 to prevent related videos and show minimal branding
-        // Add autoplay=1 to attempt autoplay (browser policies might prevent it)
-        // Add controls=1 to ensure controls are visible
         ytPlayer.src = `${embedUrl}?autoplay=1&controls=1&modestbranding=1&rel=0`;
-        // YouTube embeds handle their own speed controls, so hide ours
         playbackSpeedSelect.style.display = 'none';
       } else if (url.endsWith('.m3u8')) {
         videoPlayer.style.display = 'block';
-        playbackSpeedSelect.style.display = 'inline-block'; // Show speed control for HLS
+        playbackSpeedSelect.style.display = 'inline-block';
 
         if (Hls.isSupported()) {
-          if (videoPlayer._hls) { // Destroy previous HLS instance if it exists
+          if (videoPlayer._hls) {
             videoPlayer._hls.destroy();
           }
           const hls = new Hls();
           hls.loadSource(url);
           hls.attachMedia(videoPlayer);
-          videoPlayer._hls = hls; // Store HLS instance on video element
+          videoPlayer._hls = hls;
         } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
           videoPlayer.src = url;
         } else {
@@ -770,7 +926,6 @@
     // Dark Mode Toggle
     darkModeToggle.addEventListener('click', () => {
       document.body.classList.toggle('dark-mode');
-      // Save preference to local storage
       if (document.body.classList.contains('dark-mode')) {
         localStorage.setItem('theme', 'dark');
       } else {
@@ -780,14 +935,13 @@
 
     // On page load
     document.addEventListener('DOMContentLoaded', () => {
-      // Apply dark mode preference if saved
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme === 'dark') {
         document.body.classList.add('dark-mode');
       }
-      // Load and render lectures from JSON
-      loadAndRenderLectures();
+      // Note: loadAndRenderLectures() is called only after successful password entry
     });
   </script>
 </body>
 </html>
+
