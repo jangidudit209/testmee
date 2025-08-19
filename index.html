@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Achiever Batch Video Player</title>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <style>
+    /* CSS Variables for theming */
+    :root {
+      --bg-color: linear-gradient(135deg, #f0f2f5, #e0e5ec);
+      --header-bg: #ffffff;
+      --text-color: #333;
+      --heading-color: #2c3e50;
+      --subheading-color: #7f8c8d;
+      --search-bg: #fdfdfd;
+      --search-border: #dcdcdc;
+      --search-focus-border: #3498db;
+      --subject-section-bg: #ffffff;
+      --subject-header-color: #3498db;
+      --subject-header-border: #ecf0f1;
+      --lecture-card-bg: #fdfdfd;
+      --lecture-card-border: #f0f0f0;
+      --lecture-title-color: #34495e;
+      --lecture-date-color: #95a5a6;
+      --play-btn-bg: #2ecc71;
+      --play-btn-hover-bg: #27ae60;
+      --pdf-btn-bg: #e74c3c;
+      --pdf-btn-hover-bg: #c0392b;
+      --footer-color: #7f8c8d;
+      --popup-bg: #000;
+      --popup-overlay-bg: rgba(0,0,0,0.75);
+      --close-btn-bg: #ff6b6b;
+      --close-btn-hover-bg: #ee5253;
+      --controls-bg: rgba(0, 0, 0, 0.7); /* For playback controls */
+      --controls-text: #fff;
+    }
+
+    /* Dark Mode Variables */
+    body.dark-mode {
+      --bg-color: linear-gradient(135deg, #2c3e50, #1a252f);
+      --header-bg: #34495e;
+      --text-color: #ecf0f1;
+      --heading-color: #ecf0f1;
+      --subheading-color: #bdc3c7;
+      --search-bg: #4a627a;
+      --search-border: #5a728a;
+      --search-focus-border: #3498db;
+      --subject-section-bg: #34495e;
+      --subject-header-color: #85c1e9;
+      --subject-header-border: #4a627a;
+      --lecture-card-bg: #4a627a;
+      --lecture-card-border: #5a728a;
+      --lecture-title-color: #ecf0f1;
+      --lecture-date-color: #bdc3c7;
+      --play-btn-bg: #27ae60;
+      --play-btn-hover-bg: #219d55;
+      --pdf-btn-bg: #c0392b;
+      --pdf-btn-hover-bg: #a93226;
+      --footer-color: #bdc3c7;
+      --popup-bg: #1a1a1a;
+      --popup-overlay-bg: rgba(0,0,0,0.85);
+      --close-btn-bg: #e74c3c;
+      --close-btn-hover-bg: #c0392b;
+      --controls-bg: rgba(0, 0, 0, 0.8);
+      --controls-text: #fff;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-color);
+      text-align: center;
+      padding: 20px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    header {
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 15px 25px;
+      background: var(--header-bg);
+      border-radius: 15px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    header .header-left {
+      text-align: center;
+      flex-grow: 1;
+      margin-right: 20px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+      color: var(--heading-color);
+      font-weight: 700;
+      transition: color 0.3s ease;
+    }
+    header h2 {
+      margin: 5px 0 0;
+      font-size: 1.4em;
+      color: var(--subheading-color);
+      font-weight: 400;
+      transition: color 0.3s ease;
+    }
+    .search-container {
+      flex-shrink: 0;
+      display: flex; /* To align search and dark mode toggle */
+      align-items: center;
+      gap: 15px;
+    }
+    .search-container input {
+      padding: 12px 20px;
+      border: 1px solid var(--search-border);
+      border-radius: 30px;
+      font-size: 1.05em;
+      width: 280px;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      background-color: var(--search-bg);
+      color: var(--text-color);
+    }
+    .search-container input:focus {
+      border-color: var(--search-focus-border);
+      box-shadow: 0 0 10px rgba(52,152,219,0.3);
+      outline: none;
+      background-color: var(--header-bg);
+    }
+
+    .dark-mode-toggle {
+      background: var(--subject-header-color);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 0.9em;
+      font-weight: 600;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .dark-mode-toggle:hover {
+      background: var(--subject-header-color);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .lectures-container {
+      max-width: 960px;
+      margin: auto;
+      text-align: left;
+    }
+
+    /* Updated Subject Section (Folder) Styles */
+    .subject-section {
+      background: var(--subject-section-bg);
+      border-radius: 15px; /* Keep rounded corners for a softer look, or change to 0 for sharp square */
+      margin-bottom: 20px; /* Reduced margin for tighter grouping */
+      padding: 0; /* Remove padding from the section itself */
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      border: 1px solid var(--lecture-card-border);
+      transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      overflow: hidden; /* Ensures content doesn't spill out when collapsed */
+    }
+
+    .subject-section h2 {
+      font-size: 1.8em; /* Slightly smaller for a folder title */
+      color: var(--subject-header-color);
+      margin: 0; /* Remove default margin */
+      padding: 15px 25px; /* Padding for the header itself */
+      border-bottom: none; /* Remove border from header */
+      cursor: pointer;
+      transition: background 0.3s ease, color 0.3s ease;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--subject-header-color); /* Background for the folder header */
+      color: white; /* Text color for the folder header */
+      border-radius: 15px 15px 0 0; /* Rounded top corners */
+    }
+
+    .subject-section h2:hover {
+      background: var(--play-btn-hover-bg); /* Slightly darker on hover */
+      color: white;
+    }
+
+    .subject-section h2::after {
+      content: '+'; /* Plus sign for collapsed state */
+      font-size: 1.2em;
+      transition: transform 0.3s ease;
+    }
+
+    .subject-section h2.expanded::after {
+      content: '-'; /* Minus sign for expanded state */
+      transform: rotate(0deg); /* No rotation needed for +/- */
+    }
+
+    .subject-content {
+      display: block;
+      padding: 15px 25px; /* Add padding to the content area */
+      border-top: 1px solid var(--subject-header-border); /* Separator for content */
+      background: var(--subject-section-bg); /* Background for content */
+      transition: max-height 0.5s ease-out, opacity 0.5s ease-out; /* Smooth transition for collapse/expand */
+      max-height: 1000px; /* Arbitrarily large value for expanded state */
+      opacity: 1;
+      visibility: visible;
+      /* Added for scrollbar */
+      max-height: 400px; /* Adjust this value as needed */
+      overflow-y: auto;
+    }
+
+    .subject-content.hidden {
+      max-height: 0; /* Collapse height */
+      opacity: 0;
+      visibility: hidden;
+      padding-top: 0;
+      padding-bottom: 0;
+      border-top: none; /* Remove border when hidden */
+    }
+
+    /* Adjust lecture card margin for better spacing within folders */
+    .lecture-card {
+      background: var(--lecture-card-bg);
+      margin: 10px 0; /* Slightly reduced margin */
+      padding: 18px;
+      border-radius: 8px; /* Slightly smaller border-radius for cards inside folders */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s ease, border-color 0.3s ease;
+      border: 1px solid var(--lecture-card-border);
+    }
+    .lecture-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+    .lecture-info {
+      max-width: 68%;
+    }
+    .lecture-info h3 {
+      margin: 0 0 6px;
+      font-size: 1.15em;
+      color: var(--lecture-title-color);
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    .lecture-info span {
+      font-size: 0.9em;
+      color: var(--lecture-date-color);
+      transition: color 0.3s ease;
+    }
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    .play-btn, .pdf-btn {
+      padding: 11px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.25s ease, transform 0.15s ease, box-shadow 0.25s ease;
+      font-size: 0.95em;
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .play-btn {
+      background: var(--play-btn-bg);
+      color: white;
+    }
+    .play-btn:hover {
+      background: var(--play-btn-hover-bg);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(46,204,113,0.3);
+    }
+    .pdf-btn {
+      background: var(--pdf-btn-bg);
+      color: white;
+      text-decoration: none;
+    }
+    .pdf-btn:hover {
+      background: var(--pdf-btn-hover-bg);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(231,76,60,0.3);
+    }
+
+    /* Popup Styles */
+    #popupOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--popup-overlay-bg);
+      z-index: 999;
+      backdrop-filter: blur(5px);
+      transition: background 0.3s ease;
+    }
+    #popupPlayer {
+      display: none; /* Hidden by default */
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 1000px;
+      aspect-ratio: 16/9;
+      background: var(--popup-bg);
+      z-index: 1000;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+      animation: fadeIn 0.3s ease;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column; /* To stack video and controls */
+      box-sizing: border-box;
+    }
+    #popupPlayer video,
+    #popupPlayer iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+      object-fit: contain;
+    }
+
+    .player-controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: var(--controls-bg);
+      padding: 10px 20px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: flex-end; /* Align controls to the right */
+      align-items: center;
+      gap: 15px;
+      color: var(--controls-text);
+      font-size: 0.9em;
+    }
+    .player-controls label {
+      margin-right: 5px;
+    }
+    .player-controls select {
+      background: rgba(255,255,255,0.2);
+      color: var(--controls-text);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 5px;
+      padding: 5px 8px;
+      font-size: 0.9em;
+      cursor: pointer;
+      -webkit-appearance: none; /* Remove default dropdown arrow */
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23ffffff%22%20d%3D%22M287%2C197.9L159.3%2C69.2c-3.7-3.7-9.7-3.7-13.4%2C0L5.4%2C197.9c-3.7%2C3.7-3.7%2C9.7%2C0%2C13.4l22.7%2C22.7c3.7%2C3.7%2C9.7%2C3.7%2C13.4%2C0l100.4-100.4l100.4%2C100.4c3.7%2C3.7%2C9.7%2C3.7%2C13.4%2C0l22.7-22.7C290.7%2C207.6%2C290.7%2C201.6%2C287%2C197.9z%22%2F%3E%3C%2Fsvg%3E');
+      background-repeat: no-repeat;
+      background-position: right 8px top 50%;
+      background-size: 12px auto;
+    }
+    .player-controls select option {
+      background: var(--controls-bg); /* Ensure options are readable in dark mode */
+      color: var(--controls-text);
+    }
+
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -48%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+    #closeBtn {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      background: var(--close-btn-bg);
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.2s, box-shadow 0.2s;
+      z-index: 1001;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    #closeBtn:hover {
+      background: var(--close-btn-hover-bg);
+    }
+    footer {
+      margin-top: 50px;
+      font-size: 0.95em;
+      color: var(--footer-color);
+      transition: color 0.3s ease;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: center;
+        padding: 15px;
+      }
+      header .header-left {
+        margin-right: 0;
+        margin-bottom: 15px;
+      }
+      header h1 {
+        font-size: 2em;
+      }
+      header h2 {
+        font-size: 1.1em;
+      }
+      .search-container {
+        width: 100%;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .search-container input {
+        width: calc(100% - 40px);
+      }
+      .dark-mode-toggle {
+        width: calc(100% - 40px);
+      }
+      .subject-section {
+        padding: 0; /* No padding for section on mobile */
+      }
+      .subject-section h2 {
+        font-size: 1.4em;
+        padding: 12px 20px; /* Padding for header on mobile */
+      }
+      .subject-content {
+        padding: 10px 20px; /* Padding for content on mobile */
+        max-height: 300px; /* Adjust for mobile if needed */
+      }
+      .lecture-card {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px;
+      }
+      .lecture-info {
+        max-width: 100%;
+        margin-bottom: 10px;
+      }
+      .lecture-info h3 {
+        font-size: 1em;
+      }
+      .btn-group {
+        width: 100%;
+        justify-content: space-around;
+        gap: 8px;
+      }
+      .play-btn, .pdf-btn {
+        flex-grow: 1;
+        text-align: center;
+        padding: 10px 15px;
+        font-size: 0.85em;
+      }
+      #popupPlayer {
+        width: 95%;
+      }
+      #popupPlayer video,
+      #popupPlayer iframe {
+        height: 100%;
+      }
+      .player-controls {
+        padding: 8px 15px;
+        gap: 10px;
+      }
+      .player-controls select {
+        font-size: 0.8em;
+        padding: 4px 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Main Content (Always Visible) -->
+  <div id="mainContent">
+    <header>
+      <div class="header-left">
+        <div style="font-size: 0.9em; color: var(--lecture-date-color); margin-bottom: 5px; transition: color 0.3s ease;">Made With ❤ by PIKACHU</div>
+        <h1>Achiever Online Dropper Batch</h1>
+      </div>
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search lectures...">
+        <button id="darkModeToggle" class="dark-mode-toggle">Toggle Dark Mode</button>
+      </div>
+    </header>
+
+    <div class="lectures-container" id="lectures"></div>
+
+    <footer>
+      &copy; 2025 PIKACHU Player
+    </footer>
+
+    <!-- Popup Overlay and Player -->
+    <div id="popupOverlay"></div>
+    <div id="popupPlayer">
+      <button id="closeBtn">X</button>
+      <video id="videoPlayer" controls playsinline></video>
+      <iframe id="ytPlayer" style="display:none;" allowfullscreen></iframe>
+      <div class="player-controls">
+        <label for="playbackSpeed">Speed:</label>
+        <select id="playbackSpeed">
+          <option value="0.5">0.5x</option>
+          <option value="0.75">0.75x</option>
+          <option value="1" selected>Normal</option>
+          <option value="1.25">1.25x</option>
+          <option value="1.5">1.5x</option>
+          <option value="1.75">1.75x</option>
+          <option value="2">2x</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let lecturesData = []; // This will be populated from lecture.json
+    const lecturesContainer = document.getElementById("lectures");
+    const searchInput = document.getElementById("searchInput");
+    const subjectSections = {}; // To store references to subject content divs
+    const darkModeToggle = document.getElementById("darkModeToggle");
+    const playbackSpeedSelect = document.getElementById("playbackSpeed");
+    const videoPlayer = document.getElementById("videoPlayer");
+    const ytPlayer = document.getElementById("ytPlayer");
+
+    // Function to get the subject name from the lecture title
+    function getSubjectName(title) {
+      if (title.startsWith("Physics (11th)")) return "Physics 11th";
+      if (title.startsWith("Physics (12th)")) return "Physics 12th";
+      if (title.startsWith("Organic Chemistry")) return "Organic Chemistry";
+      if (title.startsWith("Inorganic Chemistry")) return "Inorganic Chemistry";
+      if (title.startsWith("Zoology")) return "Zoology";
+      if (title.startsWith("Botany")) return "Botany";
+      return "Other Lectures"; // Fallback for titles that don't match
+    }
+
+    // Function to fetch and render lectures
+    async function loadAndRenderLectures() {
+      try {
+        const response = await fetch('lecture.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        lecturesData = await response.json();
+        renderLectures(lecturesData);
+      } catch (error) {
+        console.error("Could not load lectures:", error);
+        lecturesContainer.innerHTML = '<p style="color: var(--pdf-btn-bg);">Failed to load lectures. Please check lecture.json.</p>';
+      }
+    }
+
+    // Render all lectures grouped by subject
+    function renderLectures(lecturesToRender) {
+      // Clear existing content
+      lecturesContainer.innerHTML = '';
+      // Clear subjectSections object to prevent old references
+      for (const key in subjectSections) {
+        if (subjectSections.hasOwnProperty(key)) {
+          delete subjectSections[key];
+        }
+      }
+
+      const sortedLectures = [...lecturesToRender].sort((a, b) => {
+        const subjectA = getSubjectName(a.title);
+        const subjectB = getSubjectName(b.title);
+        // Define a custom order for subjects
+        const order = ["Physics 11th", "Physics 12th", "Organic Chemistry", "Inorganic Chemistry", "Zoology", "Botany", "Other Lectures"];
+        return order.indexOf(subjectA) - order.indexOf(subjectB);
+      });
+
+      sortedLectures.forEach(lec => {
+        const subjectName = getSubjectName(lec.title);
+
+        if (!subjectSections[subjectName]) {
+          // Create a new subject section if it doesn't exist
+          const subjectSectionDiv = document.createElement("div");
+          subjectSectionDiv.className = "subject-section";
+
+          const subjectHeader = document.createElement("h2");
+          subjectHeader.textContent = subjectName;
+          subjectHeader.onclick = () => toggleSubjectSection(subjectSectionDiv); // Add click handler for collapsing
+          subjectSectionDiv.appendChild(subjectHeader);
+
+          const subjectContentDiv = document.createElement("div");
+          subjectContentDiv.className = "subject-content hidden"; // Initially hidden
+          subjectSectionDiv.appendChild(subjectContentDiv);
+
+          lecturesContainer.appendChild(subjectSectionDiv);
+          subjectSections[subjectName] = subjectContentDiv; // Store the content div
+        }
+
+        const card = document.createElement("div");
+        card.className = "lecture-card";
+
+        const info = document.createElement("div");
+        info.className = "lecture-info";
+        info.innerHTML = `<h3>${lec.title}</h3><span>${lec.date}</span>`;
+
+        const btnGroup = document.createElement("div");
+        btnGroup.className = "btn-group";
+
+        const playBtn = document.createElement("button");
+        playBtn.className = "play-btn";
+        playBtn.textContent = "Play Online";
+        playBtn.onclick = () => openPopup(lec.url);
+
+        btnGroup.appendChild(playBtn);
+
+        if (lec.pdf) {
+          const pdfBtn = document.createElement("a");
+          pdfBtn.className = "pdf-btn";
+          pdfBtn.textContent = "Download PDF";
+          pdfBtn.href = lec.pdf;
+          pdfBtn.target = "_blank";
+          btnGroup.appendChild(pdfBtn);
+        }
+
+        card.appendChild(info);
+        card.appendChild(btnGroup);
+        subjectSections[subjectName].appendChild(card); // Append card to the correct subject content div
+      });
+    }
+
+    // Search functionality
+    searchInput.addEventListener("input", (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const allLectureCards = document.querySelectorAll(".lecture-card");
+
+      allLectureCards.forEach(card => {
+        const title = card.querySelector("h3").textContent.toLowerCase();
+        if (title.includes(searchTerm)) {
+          card.style.display = "flex"; // Show the card
+          // Ensure parent subject section is visible and expanded if a card matches
+          const parentContent = card.closest('.subject-content');
+          if (parentContent && parentContent.classList.contains('hidden')) {
+            parentContent.classList.remove('hidden');
+            parentContent.previousElementSibling.classList.add('expanded'); // Add expanded class to h2
+          }
+          const parentSection = card.closest('.subject-section');
+          if (parentSection) {
+            parentSection.style.display = "block";
+          }
+        } else {
+          card.style.display = "none"; // Hide the card
+        }
+      });
+
+      // After filtering, check if any cards are visible in a subject section
+      // If all cards in a section are hidden, hide the section itself
+      document.querySelectorAll(".subject-section").forEach(section => {
+        const visibleCardsInThisSection = section.querySelectorAll(".lecture-card[style*='display: flex']").length;
+        if (visibleCardsInThisSection === 0 && searchTerm !== "") {
+          section.style.display = "none";
+        } else {
+          section.style.display = "block";
+          // If search term is empty, ensure all sections are collapsed again
+          if (searchTerm === "") {
+            const content = section.querySelector(".subject-content");
+            const header = section.querySelector("h2");
+            if (!content.classList.contains("hidden")) {
+              content.classList.add("hidden");
+              header.classList.remove("expanded");
+            }
+          }
+        }
+      });
+    });
+
+    // Collapsible subject sections (optional, but good for long lists)
+    function toggleSubjectSection(sectionDiv) {
+      const content = sectionDiv.querySelector(".subject-content");
+      const header = sectionDiv.querySelector("h2");
+      content.classList.toggle("hidden");
+      header.classList.toggle("expanded"); // Toggle expanded class on header for +/- sign
+    }
+
+
+    const popup = document.getElementById("popupPlayer");
+    const overlay = document.getElementById("popupOverlay");
+    const closeBtn = document.getElementById("closeBtn");
+
+    function openPopup(url) {
+      overlay.style.display = 'block';
+      popup.style.display = 'flex'; // Set display to flex to show popup
+      playSource(url);
+    }
+
+    function closePopup() {
+      popup.style.display = 'none';
+      overlay.style.display = 'none';
+      videoPlayer.pause();
+      videoPlayer.removeAttribute('src'); // Clear HLS source
+      if (Hls.isSupported()) { // Destroy HLS instance if it exists
+        if (videoPlayer._hls) {
+          videoPlayer._hls.destroy();
+          videoPlayer._hls = null;
+        }
+      }
+      ytPlayer.src = '';
+      playbackSpeedSelect.value = "1"; // Reset speed to normal
+    }
+
+    closeBtn.onclick = closePopup;
+    overlay.onclick = closePopup;
+
+    function playSource(url) {
+      // Reset players
+      videoPlayer.style.display = 'none';
+      ytPlayer.style.display = 'none';
+      videoPlayer.src = '';
+      ytPlayer.src = '';
+      playbackSpeedSelect.style.display = 'none'; // Hide speed control by default
+
+      if (url.includes('youtube.com/embed/') || url.includes('youtu.be/')) {
+        ytPlayer.style.display = 'block';
+        // Ensure the URL is in the correct embed format for YouTube
+        let embedUrl = url;
+        if (url.includes('youtu.be/')) {
+            const videoId = url.split('youtu.be/')[1].split('?')[0];
+            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        } else if (url.includes('watch?v=')) {
+            const videoId = url.split('watch?v=')[1].split('&')[0];
+            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        }
+        // Add modestbranding and rel=0 to prevent related videos and show minimal branding
+        // Add autoplay=1 to attempt autoplay (browser policies might prevent it)
+        // Add controls=1 to ensure controls are visible
+        ytPlayer.src = `${embedUrl}?autoplay=1&controls=1&modestbranding=1&rel=0`;
+        // YouTube embeds handle their own speed controls, so hide ours
+        playbackSpeedSelect.style.display = 'none';
+      } else if (url.endsWith('.m3u8')) {
+        videoPlayer.style.display = 'block';
+        playbackSpeedSelect.style.display = 'inline-block'; // Show speed control for HLS
+
+        if (Hls.isSupported()) {
+          if (videoPlayer._hls) { // Destroy previous HLS instance if it exists
+            videoPlayer._hls.destroy();
+          }
+          const hls = new Hls();
+          hls.loadSource(url);
+          hls.attachMedia(videoPlayer);
+          videoPlayer._hls = hls; // Store HLS instance on video element
+        } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+          videoPlayer.src = url;
+        } else {
+          alert('HLS is not supported in this browser.');
+        }
+      } else if (url.endsWith('.mithu')) {
+        alert('This video format (.mithu) is not directly playable in a web browser without a specific player or decryption. Please try a different video.');
+      }
+      else {
+        alert('Unsupported video link: ' + url);
+      }
+    }
+
+    // Playback Speed Control
+    playbackSpeedSelect.addEventListener('change', (event) => {
+      videoPlayer.playbackRate = parseFloat(event.target.value);
+    });
+
+    // Dark Mode Toggle
+    darkModeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      // Save preference to local storage
+      if (document.body.classList.contains('dark-mode')) {
+        localStorage.setItem('theme', 'dark');
+      } else {
+        localStorage.setItem('theme', 'light');
+      }
+    });
+
+    // On page load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Apply dark mode preference if saved
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+      }
+      // Load and render lectures from JSON
+      loadAndRenderLectures();
+    });
+  </script>
+</body>
+</html>
