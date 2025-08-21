@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -755,17 +756,27 @@
 
     let currentSubjectLecturesData = []; // To hold lectures of the currently viewed folder
 
-    // Function to get the subject name from the lecture title
+    // Function to get the subject name from the lecture title - UPDATED WITH MORE ROBUST CHECKING
     function getSubjectName(title) {
+      // Convert title to lowercase for case-insensitive comparison
+      const titleLower = title.toLowerCase();
+      
+      // Check for Test entries first (more specific check)
+      if (titleLower.startsWith("test")) return "Tests";
+      
+      // Check for Module entries (more specific check)
+      if (titleLower.startsWith("module")) return "Modules";
+      
+      // Original subject checks
       if (title.startsWith("Physics (11th)")) return "Physics 11th";
       if (title.startsWith("Physics (12th)")) return "Physics 12th";
       if (title.startsWith("Organic Chemistry")) return "Organic Chemistry";
       if (title.startsWith("Inorganic Chemistry")) return "Inorganic Chemistry";
       if (title.startsWith("Zoology")) return "Zoology";
       if (title.startsWith("Botany")) return "Botany";
-      // New conditions for Test and Module
-      if (title.startsWith("Test -")) return "Tests";
-      if (title.startsWith("Module -")) return "Modules"
+      
+      // Fallback
+      return "Other Lectures";
     }
 
     // Function to fetch and render lectures (initial load)
@@ -776,6 +787,13 @@
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         lecturesData = await response.json();
+        
+        // Debug: Log each lecture's title and corresponding subject
+        console.log("Debug: Lecture titles and their assigned subjects:");
+        lecturesData.forEach(lec => {
+          console.log(`"${lec.title}" -> "${getSubjectName(lec.title)}"`);
+        });
+        
         renderSubjectFolders(lecturesData); // Call new function to render folders
       } catch (error) {
         console.error("Could not load lectures:", error);
@@ -794,9 +812,12 @@
         subjects.add(getSubjectName(lec.title));
       });
 
+      // Debug: Log all unique subjects found
+      console.log("Debug: All unique subjects found:", Array.from(subjects));
+
       const sortedSubjects = Array.from(subjects).sort((a, b) => {
         // Define a custom order for subjects
-        const order = ["Physics 11th", "Physics 12th", "Organic Chemistry", "Inorganic Chemistry", "Zoology", "Botany", "Tests", "Modules"];
+        const order = ["Physics 11th", "Physics 12th", "Organic Chemistry", "Inorganic Chemistry", "Zoology", "Botany", "Tests", "Modules", "Other Lectures"];
         return order.indexOf(a) - order.indexOf(b);
       });
 
@@ -817,6 +838,10 @@
       folderSearchInput.value = ''; // Clear search input when opening a new folder
 
       currentSubjectLecturesData = lecturesData.filter(lec => getSubjectName(lec.title) === subjectName);
+      
+      // Debug: Log lectures for this specific subject
+      console.log(`Debug: Lectures for subject "${subjectName}":`, currentSubjectLecturesData.map(lec => lec.title));
+      
       renderLecturesInFolder(currentSubjectLecturesData);
     }
 
@@ -982,3 +1007,4 @@
   </script>
 </body>
 </html>
+
