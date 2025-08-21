@@ -765,8 +765,7 @@
       if (title.startsWith("Botany")) return "Botany";
       // New conditions for Test and Module
       if (title.startsWith("Test -")) return "Tests";
-      if (title.startsWith("Module -")) return "Modules";
-      return "Other Lectures";
+      if (title.startsWith("Module -")) return "Modules"
     }
 
     // Function to fetch and render lectures (initial load)
@@ -797,7 +796,7 @@
 
       const sortedSubjects = Array.from(subjects).sort((a, b) => {
         // Define a custom order for subjects
-        const order = ["Physics 11th", "Physics 12th", "Organic Chemistry", "Inorganic Chemistry", "Zoology", "Botany", "Tests", "Modules", "Other Lectures"];
+        const order = ["Physics 11th", "Physics 12th", "Organic Chemistry", "Inorganic Chemistry", "Zoology", "Botany", "Tests", "Modules"];
         return order.indexOf(a) - order.indexOf(b);
       });
 
