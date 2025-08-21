@@ -459,7 +459,7 @@
       transform: translate(-50%, -50%);
       width: 90%;
       max-width: 1000px;
-      aspect-ratio: 16/9; /* Keep aspect ratio for videos */
+      /* aspect-ratio will be set dynamically by JS */
       background: var(--popup-bg);
       z-index: 1000;
       border-radius: 15px;
@@ -478,7 +478,7 @@
       height: 100%;
       border: none;
       display: block;
-      object-fit: contain; /* For video */
+      /* object-fit: contain; for video, object-fit: fill; for PDF */
     }
     #popupPlayer #pdfViewer {
         object-fit: fill; /* For PDF to fill the space */
@@ -493,7 +493,7 @@
       background: var(--controls-bg);
       padding: 10px 20px;
       box-sizing: border-box;
-      display: flex;
+      display: flex; /* Default display */
       justify-content: flex-end;
       align-items: center;
       gap: 15px;
@@ -710,7 +710,7 @@
       <video id="videoPlayer" controls playsinline></video>
       <iframe id="ytPlayer" style="display:none;" allowfullscreen></iframe>
       <iframe id="pdfViewer" style="display:none;" allowfullscreen></iframe> <!-- New: PDF Viewer iframe -->
-      <div class="player-controls">
+      <div class="player-controls"> <!-- This div will be shown/hidden -->
         <label for="playbackSpeed">Speed:</label>
         <select id="playbackSpeed">
           <option value="0.5">0.5x</option>
@@ -775,6 +775,8 @@
     const videoPlayer = document.getElementById("videoPlayer");
     const ytPlayer = document.getElementById("ytPlayer");
     const pdfViewer = document.getElementById("pdfViewer"); // New: Get PDF viewer iframe
+    const popupPlayer = document.getElementById("popupPlayer"); // Get the popup container
+    const playerControls = document.querySelector(".player-controls"); // Get the controls div
 
     let currentSubjectLecturesData = []; // To hold lectures of the currently viewed folder
 
@@ -960,9 +962,13 @@
       ytPlayer.src = '';
       
       // Reset PDF viewer
-      pdfViewer.src = ''; // New: Clear PDF viewer source
+      pdfViewer.src = ''; 
       
       playbackSpeedSelect.value = "1";
+      
+      // Reset popup styles
+      popupPlayer.style.aspectRatio = '16 / 9'; // Reset aspect ratio for videos
+      playerControls.style.display = 'flex'; // Show controls by default on close
     }
 
     closeBtn.onclick = closePopup;
@@ -972,13 +978,14 @@
       // Hide all players initially
       videoPlayer.style.display = 'none';
       ytPlayer.style.display = 'none';
-      pdfViewer.style.display = 'none'; // New: Hide PDF viewer
-      playbackSpeedSelect.style.display = 'none';
+      pdfViewer.style.display = 'none'; 
+      playerControls.style.display = 'none'; // Hide controls by default
+      popupPlayer.style.aspectRatio = 'auto'; // Default to auto for flexibility
 
       // Clear sources
       videoPlayer.src = '';
       ytPlayer.src = '';
-      pdfViewer.src = ''; // New: Clear PDF viewer source
+      pdfViewer.src = ''; 
 
       // Handle cases where there is no URL
       if (!url || url.trim() === "") {
@@ -989,6 +996,7 @@
 
       if (url.includes('youtube.com/embed/') || url.includes('youtu.be/')) {
         ytPlayer.style.display = 'block';
+        popupPlayer.style.aspectRatio = '16 / 9'; // Set aspect ratio for YouTube
         let embedUrl = url;
         if (url.includes('youtu.be/')) {
             const videoId = url.split('youtu.be/')[1].split('?')[0];
@@ -998,10 +1006,10 @@
             embedUrl = `https://www.youtube.com/embed/${videoId}`;
         }
         ytPlayer.src = `${embedUrl}?autoplay=1&controls=1&modestbranding=1&rel=0`;
-        playbackSpeedSelect.style.display = 'none'; // Speed control not for YouTube
       } else if (url.endsWith('.m3u8')) {
         videoPlayer.style.display = 'block';
-        playbackSpeedSelect.style.display = 'inline-block';
+        popupPlayer.style.aspectRatio = '16 / 9'; // Set aspect ratio for HLS video
+        playerControls.style.display = 'flex'; // Show controls for HLS video
 
         if (Hls.isSupported()) {
           if (videoPlayer._hls) {
@@ -1016,12 +1024,12 @@
         } else {
           alert('HLS is not supported in this browser.');
         }
-      } else if (url.toLowerCase().endsWith('.pdf')) { // New: Handle PDF files
+      } else if (url.toLowerCase().endsWith('.pdf')) { 
         pdfViewer.style.display = 'block';
+        popupPlayer.style.aspectRatio = 'auto'; // Allow PDF to fill available space
         // For direct PDF viewing, append #toolbar=0&navpanes=0 to hide some UI elements
         // Note: Browser support for these parameters varies.
         pdfViewer.src = `${url}#toolbar=0&navpanes=0`; 
-        playbackSpeedSelect.style.display = 'none'; // Speed control not for PDF
       } else if (url.endsWith('.mithu')) {
         alert('This video format (.mithu) is not directly playable in a web browser without a specific player or decryption. Please try a different video.');
       }
