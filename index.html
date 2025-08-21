@@ -8,7 +8,8 @@
   <style>
     /* CSS Variables for theming */
     :root {
-      --bg-color: linear-gradient(135deg, #f0f2f5, #e0e5ec);
+      /* UPDATED: Background color for a less white homepage */
+      --bg-color: linear-gradient(135deg, #e0f2f7, #c8e6f0); /* Light blue/cyan gradient */
       --header-bg: #ffffff;
       --text-color: #333;
       --heading-color: #2c3e50;
@@ -16,10 +17,10 @@
       --search-bg: #fdfdfd;
       --search-border: #dcdcdc;
       --search-focus-border: #3498db;
-      --subject-section-bg: #ffffff;
+      --subject-section-bg: #ffffff; /* Kept white for contrast */
       --subject-header-color: #3498db;
       --subject-header-border: #ecf0f1;
-      --lecture-card-bg: #fdfdfd;
+      --lecture-card-bg: #ffffff; /* Kept white for contrast */
       --lecture-card-border: #f0f0f0;
       --lecture-title-color: #34495e;
       --lecture-date-color: #95a5a6;
@@ -34,8 +35,8 @@
       --close-btn-hover-bg: #ee5253;
       --controls-bg: rgba(0, 0, 0, 0.7);
       --controls-text: #fff;
-      --view-pdf-btn-bg: #3498db; /* New: View PDF button color */
-      --view-pdf-btn-hover-bg: #2980b9; /* New: View PDF button hover color */
+      --view-pdf-btn-bg: #3498db;
+      --view-pdf-btn-hover-bg: #2980b9;
     }
 
     /* Dark Mode Variables */
@@ -66,8 +67,8 @@
       --close-btn-hover-bg: #c0392b;
       --controls-bg: rgba(0, 0, 0, 0.8);
       --controls-text: #fff;
-      --view-pdf-btn-bg: #2980b9; /* New: View PDF button color for dark mode */
-      --view-pdf-btn-hover-bg: #2471a3; /* New: View PDF button hover color for dark mode */
+      --view-pdf-btn-bg: #2980b9;
+      --view-pdf-btn-hover-bg: #2471a3;
     }
 
     body {
@@ -397,7 +398,7 @@
       gap: 12px;
       flex-shrink: 0;
     }
-    .play-btn, .pdf-btn, .view-pdf-btn { /* Added .view-pdf-btn */
+    .play-btn, .pdf-btn, .view-pdf-btn {
       padding: 11px 20px;
       border: none;
       border-radius: 8px;
@@ -473,7 +474,7 @@
     }
     #popupPlayer video,
     #popupPlayer iframe,
-    #popupPlayer #pdfViewer { /* Added #pdfViewer */
+    #popupPlayer #pdfViewer {
       width: 100%;
       height: 100%;
       border: none;
@@ -630,7 +631,7 @@
         justify-content: space-around;
         gap: 8px;
       }
-      .play-btn, .pdf-btn, .view-pdf-btn { /* Added .view-pdf-btn */
+      .play-btn, .pdf-btn, .view-pdf-btn {
         flex-grow: 1;
         text-align: center;
         padding: 10px 15px;
@@ -641,7 +642,7 @@
       }
       #popupPlayer video,
       #popupPlayer iframe,
-      #popupPlayer #pdfViewer { /* Added #pdfViewer */
+      #popupPlayer #pdfViewer {
         height: 100%;
       }
       .player-controls {
@@ -709,7 +710,7 @@
       <button id="closeBtn">X</button>
       <video id="videoPlayer" controls playsinline></video>
       <iframe id="ytPlayer" style="display:none;" allowfullscreen></iframe>
-      <iframe id="pdfViewer" style="display:none;" allowfullscreen></iframe> <!-- New: PDF Viewer iframe -->
+      <iframe id="pdfViewer" style="display:none;" allowfullscreen></iframe>
       <div class="player-controls">
         <label for="playbackSpeed">Speed:</label>
         <select id="playbackSpeed">
@@ -774,7 +775,7 @@
     const playbackSpeedSelect = document.getElementById("playbackSpeed");
     const videoPlayer = document.getElementById("videoPlayer");
     const ytPlayer = document.getElementById("ytPlayer");
-    const pdfViewer = document.getElementById("pdfViewer"); // New: Get PDF viewer iframe
+    const pdfViewer = document.getElementById("pdfViewer");
 
     let currentSubjectLecturesData = []; // To hold lectures of the currently viewed folder
 
@@ -782,13 +783,13 @@
     function getSubjectName(title) {
       // Convert title to lowercase for case-insensitive comparison
       const titleLower = title.toLowerCase();
-      
+
       // Check for Test entries first (more specific check)
       if (titleLower.startsWith("test")) return "Tests";
-      
+
       // Check for Module entries (more specific check)
       if (titleLower.startsWith("module")) return "Modules";
-      
+
       // Original subject checks
       if (title.startsWith("Physics (11th)")) return "Physics 11th";
       if (title.startsWith("Physics (12th)")) return "Physics 12th";
@@ -796,7 +797,7 @@
       if (title.startsWith("Inorganic Chemistry")) return "Inorganic Chemistry";
       if (title.startsWith("Zoology")) return "Zoology";
       if (title.startsWith("Botany")) return "Botany";
-      
+
       // Fallback
       return "Other Lectures";
     }
@@ -809,13 +810,13 @@
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         lecturesData = await response.json();
-        
+
         // Debug: Log each lecture's title and corresponding subject
         console.log("Debug: Lecture titles and their assigned subjects:");
         lecturesData.forEach(lec => {
           console.log(`"${lec.title}" -> "${getSubjectName(lec.title)}"`);
         });
-        
+
         renderSubjectFolders(lecturesData); // Call new function to render folders
       } catch (error) {
         console.error("Could not load lectures:", error);
@@ -860,10 +861,10 @@
       folderSearchInput.value = ''; // Clear search input when opening a new folder
 
       currentSubjectLecturesData = lecturesData.filter(lec => getSubjectName(lec.title) === subjectName);
-      
+
       // Debug: Log lectures for this specific subject
       console.log(`Debug: Lectures for subject "${subjectName}":`, currentSubjectLecturesData.map(lec => lec.title));
-      
+
       renderLecturesInFolder(currentSubjectLecturesData);
     }
 
@@ -896,11 +897,11 @@
         }
 
         if (lec.pdf) {
-          // New: View PDF button
+          // UPDATED: View PDF button now opens in a new tab for full-screen viewing
           const viewPdfBtn = document.createElement("button");
           viewPdfBtn.className = "view-pdf-btn";
           viewPdfBtn.textContent = "View PDF";
-          viewPdfBtn.onclick = () => openPopup(lec.pdf); // Open PDF in popup
+          viewPdfBtn.onclick = () => window.open(lec.pdf, '_blank'); // Open PDF in new tab
           btnGroup.appendChild(viewPdfBtn);
 
           // Existing: Download PDF button
@@ -945,7 +946,7 @@
     function closePopup() {
       popup.style.display = 'none';
       overlay.style.display = 'none';
-      
+
       // Reset video player
       videoPlayer.pause();
       videoPlayer.removeAttribute('src');
@@ -955,13 +956,13 @@
           videoPlayer._hls = null;
         }
       }
-      
+
       // Reset YouTube player
       ytPlayer.src = '';
-      
+
       // Reset PDF viewer
-      pdfViewer.src = ''; // New: Clear PDF viewer source
-      
+      pdfViewer.src = '';
+
       playbackSpeedSelect.value = "1";
     }
 
@@ -972,13 +973,13 @@
       // Hide all players initially
       videoPlayer.style.display = 'none';
       ytPlayer.style.display = 'none';
-      pdfViewer.style.display = 'none'; // New: Hide PDF viewer
-      playbackSpeedSelect.style.display = 'none';
+      pdfViewer.style.display = 'none';
+      playbackSpeedSelect.style.display = 'none'; // Hide speed control by default
 
       // Clear sources
       videoPlayer.src = '';
       ytPlayer.src = '';
-      pdfViewer.src = ''; // New: Clear PDF viewer source
+      pdfViewer.src = '';
 
       // Handle cases where there is no URL
       if (!url || url.trim() === "") {
@@ -998,10 +999,10 @@
             embedUrl = `https://www.youtube.com/embed/${videoId}`;
         }
         ytPlayer.src = `${embedUrl}?autoplay=1&controls=1&modestbranding=1&rel=0`;
-        playbackSpeedSelect.style.display = 'none'; // Speed control not for YouTube
+        // playbackSpeedSelect remains hidden for YouTube
       } else if (url.endsWith('.m3u8')) {
         videoPlayer.style.display = 'block';
-        playbackSpeedSelect.style.display = 'inline-block';
+        playbackSpeedSelect.style.display = 'inline-block'; // Show speed control for HLS videos
 
         if (Hls.isSupported()) {
           if (videoPlayer._hls) {
@@ -1016,12 +1017,21 @@
         } else {
           alert('HLS is not supported in this browser.');
         }
-      } else if (url.toLowerCase().endsWith('.pdf')) { // New: Handle PDF files
+      } else if (url.toLowerCase().endsWith('.pdf')) {
+        // If you want PDF to open in popup, uncomment this block and comment out the window.open in renderLecturesInFolder
+        /*
         pdfViewer.style.display = 'block';
         // For direct PDF viewing, append #toolbar=0&navpanes=0 to hide some UI elements
         // Note: Browser support for these parameters varies.
-        pdfViewer.src = `${url}#toolbar=0&navpanes=0`; 
-        playbackSpeedSelect.style.display = 'none'; // Speed control not for PDF
+        pdfViewer.src = `${url}#toolbar=0&navpanes=0`;
+        // playbackSpeedSelect remains hidden for PDF
+        */
+        // If you want PDF to open in a new tab, this block is not needed for the "View PDF" button.
+        // However, if any other part of your code calls openPopup with a PDF, this will handle it.
+        // For consistency with the "View PDF" button, it's better to open in a new tab.
+        window.open(url, '_blank');
+        closePopup(); // Close the popup if it was opened for a PDF that's now opening in a new tab
+        return; // Exit function as PDF is handled
       } else if (url.endsWith('.mithu')) {
         alert('This video format (.mithu) is not directly playable in a web browser without a specific player or decryption. Please try a different video.');
       }
