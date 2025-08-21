@@ -329,11 +329,24 @@
     }
 
     .folder-search input {
-      width: calc(100% - 40px); /* Adjust width for padding */
+      padding: 12px 20px;
+      border: 1px solid var(--search-border);
+      border-radius: 30px;
+      font-size: 1.05em;
+      width: 280px; /* Default width */
       max-width: 500px; /* Limit max width */
-      margin: 0 auto; /* Center the input */
-      display: block;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+      transition: all 0.3s ease;
+      background-color: var(--search-bg);
+      color: var(--text-color);
     }
+    .folder-search input:focus {
+      border-color: var(--search-focus-border);
+      box-shadow: 0 0 10px rgba(52,152,219,0.3);
+      outline: none;
+      background-color: var(--header-bg);
+    }
+
 
     /* New: Folder Title */
     .folder-title {
@@ -750,6 +763,9 @@
       if (title.startsWith("Inorganic Chemistry")) return "Inorganic Chemistry";
       if (title.startsWith("Zoology")) return "Zoology";
       if (title.startsWith("Botany")) return "Botany";
+      // New conditions for Test and Module
+      if (title.startsWith("Test -")) return "Tests";
+      if (title.startsWith("Module -")) return "Modules";
       return "Other Lectures";
     }
 
@@ -780,7 +796,8 @@
       });
 
       const sortedSubjects = Array.from(subjects).sort((a, b) => {
-        const order = ["Physics 11th", "Physics 12th", "Organic Chemistry", "Inorganic Chemistry", "Zoology", "Botany", "Other Lectures"];
+        // Define a custom order for subjects
+        const order = ["Physics 11th", "Physics 12th", "Organic Chemistry", "Inorganic Chemistry", "Zoology", "Botany", "Tests", "Modules", "Other Lectures"];
         return order.indexOf(a) - order.indexOf(b);
       });
 
@@ -823,12 +840,14 @@
         const btnGroup = document.createElement("div");
         btnGroup.className = "btn-group";
 
-        const playBtn = document.createElement("button");
-        playBtn.className = "play-btn";
-        playBtn.textContent = "Play Online";
-        playBtn.onclick = () => openPopup(lec.url);
-
-        btnGroup.appendChild(playBtn);
+        // Conditionally create Play button only if a URL exists
+        if (lec.url && lec.url.trim() !== "") {
+            const playBtn = document.createElement("button");
+            playBtn.className = "play-btn";
+            playBtn.textContent = "Play Online";
+            playBtn.onclick = () => openPopup(lec.url);
+            btnGroup.appendChild(playBtn);
+        }
 
         if (lec.pdf) {
           const pdfBtn = document.createElement("a");
@@ -893,6 +912,13 @@
       videoPlayer.src = '';
       ytPlayer.src = '';
       playbackSpeedSelect.style.display = 'none';
+
+      // Handle cases where there is no video URL
+      if (!url || url.trim() === "") {
+        alert('No video available for this lecture. Please download the PDF if available.');
+        closePopup(); // Close the popup if there's no video to play
+        return; // Exit the function
+      }
 
       if (url.includes('youtube.com/embed/') || url.includes('youtu.be/')) {
         ytPlayer.style.display = 'block';
