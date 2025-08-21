@@ -220,6 +220,14 @@
       font-weight: 400;
       transition: color 0.3s ease;
     }
+
+    /* New: Header Right for global elements */
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
     .search-container {
       flex-shrink: 0;
       display: flex;
@@ -268,72 +276,74 @@
       text-align: left;
     }
 
-    .subject-section {
+    /* New: Subject Folder Card Styles */
+    .subject-folder-card {
       background: var(--subject-section-bg);
       border-radius: 15px;
-      margin-bottom: 20px;
-      padding: 0;
+      margin-bottom: 15px;
+      padding: 25px;
       box-shadow: 0 8px 25px rgba(0,0,0,0.1);
       border: 1px solid var(--lecture-card-border);
-      transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-      overflow: hidden;
+      transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.3s ease;
+      cursor: pointer;
+      text-align: center;
     }
 
-    .subject-section h2 {
+    .subject-folder-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
+
+    .subject-folder-card h3 {
       font-size: 1.8em;
       color: var(--subject-header-color);
       margin: 0;
-      padding: 15px 25px;
-      border-bottom: none;
-      cursor: pointer;
-      transition: background 0.3s ease, color 0.3s ease;
       font-weight: 600;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--subject-header-color);
+    }
+
+    /* New: Back Button */
+    .back-btn {
+      background: var(--pdf-btn-bg); /* Reusing PDF button style for consistency */
       color: white;
-      border-radius: 15px 15px 0 0;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 600;
+      margin-bottom: 20px;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
-    .subject-section h2:hover {
-      background: var(--play-btn-hover-bg);
-      color: white;
+    .back-btn:hover {
+      background: var(--pdf-btn-hover-bg);
+      transform: translateY(-2px);
     }
 
-    .subject-section h2::after {
-      content: '+';
-      font-size: 1.2em;
-      transition: transform 0.3s ease;
+    /* New: Folder Specific Search */
+    .folder-search {
+      margin-bottom: 20px;
+      display: flex; /* Use flex to center input */
+      justify-content: center;
     }
 
-    .subject-section h2.expanded::after {
-      content: '-';
-      transform: rotate(0deg);
-    }
-
-    .subject-content {
+    .folder-search input {
+      width: calc(100% - 40px); /* Adjust width for padding */
+      max-width: 500px; /* Limit max width */
+      margin: 0 auto; /* Center the input */
       display: block;
-      padding: 15px 25px;
-      border-top: 1px solid var(--subject-header-border);
-      background: var(--subject-section-bg);
-      transition: max-height 0.5s ease-out, opacity 0.5s ease-out;
-      max-height: 1000px;
-      opacity: 1;
-      visibility: visible;
-      max-height: 400px;
-      overflow-y: auto;
     }
 
-    .subject-content.hidden {
-      max-height: 0;
-      opacity: 0;
-      visibility: hidden;
-      padding-top: 0;
-      padding-bottom: 0;
-      border-top: none;
+    /* New: Folder Title */
+    .folder-title {
+      font-size: 2em;
+      color: var(--heading-color);
+      margin-bottom: 25px;
+      text-align: center;
     }
 
+    /* Existing lecture card styles (no change needed here) */
     .lecture-card {
       background: var(--lecture-card-bg);
       margin: 10px 0;
@@ -537,28 +547,39 @@
       header h2 {
         font-size: 1.1em;
       }
-      .search-container {
+
+      /* New: Responsive for header-right */
+      .header-right {
         width: 100%;
-        flex-direction: column;
-        gap: 10px;
-      }
-      .search-container input {
-        width: calc(100% - 40px);
+        justify-content: center;
+        margin-top: 15px;
       }
       .dark-mode-toggle {
-        width: calc(100% - 40px);
+        width: auto; /* Let it size naturally */
       }
-      .subject-section {
-        padding: 0;
+
+      /* New: Responsive for folder cards */
+      .subject-folder-card {
+        padding: 20px;
       }
-      .subject-section h2 {
-        font-size: 1.4em;
-        padding: 12px 20px;
+      .subject-folder-card h3 {
+        font-size: 1.5em;
       }
-      .subject-content {
-        padding: 10px 20px;
-        max-height: 300px;
+
+      /* New: Responsive for back button */
+      .back-btn {
+        width: 100%;
+        text-align: center;
       }
+
+      /* New: Responsive for folder search */
+      .folder-search input {
+        width: calc(100% - 30px); /* Adjust for smaller screens */
+      }
+      .folder-title {
+        font-size: 1.6em;
+      }
+
       .lecture-card {
         flex-direction: column;
         align-items: flex-start;
@@ -624,13 +645,25 @@
         <div style="font-size: 0.9em; color: var(--lecture-date-color); margin-bottom: 5px; transition: color 0.3s ease;">Made With Love by PIKACHU</div>
         <h1>Achiever Online Dropper Batch</h1>
       </div>
-      <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Search lectures...">
+      <div class="header-right">
         <button id="darkModeToggle" class="dark-mode-toggle">Toggle Dark Mode</button>
       </div>
     </header>
 
-    <div class="lectures-container" id="lectures"></div>
+    <div class="lectures-container">
+      <!-- Container for Subject Folders -->
+      <div id="subjectListContainer"></div>
+
+      <!-- Container for Lectures within a Folder -->
+      <div id="folderContentContainer" style="display: none;">
+        <button id="backToSubjectsBtn" class="back-btn">← Back to Subjects</button>
+        <div class="search-container folder-search">
+          <input type="text" id="folderSearchInput" placeholder="Search lectures in this folder...">
+        </div>
+        <h2 id="currentSubjectTitle" class="folder-title"></h2>
+        <div id="currentSubjectLectures"></div>
+      </div>
+    </div>
 
     <footer>
       &copy; 2025 PIKACHU Player
@@ -668,7 +701,7 @@
 
     function checkPassword() {
       const enteredPassword = passwordInput.value.trim();
-      
+
       if (enteredPassword === correctPassword) {
         passwordScreen.style.display = "none";
         mainContent.style.display = "block";
@@ -678,7 +711,7 @@
         errorMessage.classList.add("show");
         passwordInput.value = "";
         passwordInput.style.borderColor = "#e74c3c";
-        
+
         setTimeout(() => {
           errorMessage.classList.remove("show");
           passwordInput.style.borderColor = "#ddd";
@@ -695,13 +728,19 @@
 
     // Main application variables
     let lecturesData = [];
-    const lecturesContainer = document.getElementById("lectures");
-    const searchInput = document.getElementById("searchInput");
-    const subjectSections = {};
+    const subjectListContainer = document.getElementById("subjectListContainer");
+    const folderContentContainer = document.getElementById("folderContentContainer");
+    const backToSubjectsBtn = document.getElementById("backToSubjectsBtn");
+    const folderSearchInput = document.getElementById("folderSearchInput");
+    const currentSubjectTitle = document.getElementById("currentSubjectTitle");
+    const currentSubjectLectures = document.getElementById("currentSubjectLectures");
+
     const darkModeToggle = document.getElementById("darkModeToggle");
     const playbackSpeedSelect = document.getElementById("playbackSpeed");
     const videoPlayer = document.getElementById("videoPlayer");
     const ytPlayer = document.getElementById("ytPlayer");
+
+    let currentSubjectLecturesData = []; // To hold lectures of the currently viewed folder
 
     // Function to get the subject name from the lecture title
     function getSubjectName(title) {
@@ -714,7 +753,7 @@
       return "Other Lectures";
     }
 
-    // Function to fetch and render lectures
+    // Function to fetch and render lectures (initial load)
     async function loadAndRenderLectures() {
       try {
         const response = await fetch('lecture.json');
@@ -722,49 +761,58 @@
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         lecturesData = await response.json();
-        renderLectures(lecturesData);
+        renderSubjectFolders(lecturesData); // Call new function to render folders
       } catch (error) {
         console.error("Could not load lectures:", error);
-        lecturesContainer.innerHTML = '<p style="color: var(--pdf-btn-bg);">Failed to load lectures. Please check lecture.json.</p>';
+        subjectListContainer.innerHTML = '<p style="color: var(--pdf-btn-bg);">Failed to load lectures. Please check lecture.json.</p>';
       }
     }
 
-    // Render all lectures grouped by subject
-    function renderLectures(lecturesToRender) {
-      lecturesContainer.innerHTML = '';
-      for (const key in subjectSections) {
-        if (subjectSections.hasOwnProperty(key)) {
-          delete subjectSections[key];
-        }
-      }
+    // New function: Render subject folders
+    function renderSubjectFolders(allLectures) {
+      subjectListContainer.innerHTML = '';
+      folderContentContainer.style.display = 'none';
+      subjectListContainer.style.display = 'block';
 
-      const sortedLectures = [...lecturesToRender].sort((a, b) => {
-        const subjectA = getSubjectName(a.title);
-        const subjectB = getSubjectName(b.title);
-        const order = ["Physics 11th", "Physics 12th", "Organic Chemistry", "Inorganic Chemistry", "Zoology", "Botany", "Other Lectures"];
-        return order.indexOf(subjectA) - order.indexOf(subjectB);
+      const subjects = new Set();
+      allLectures.forEach(lec => {
+        subjects.add(getSubjectName(lec.title));
       });
 
-      sortedLectures.forEach(lec => {
-        const subjectName = getSubjectName(lec.title);
+      const sortedSubjects = Array.from(subjects).sort((a, b) => {
+        const order = ["Physics 11th", "Physics 12th", "Organic Chemistry", "Inorganic Chemistry", "Zoology", "Botany", "Other Lectures"];
+        return order.indexOf(a) - order.indexOf(b);
+      });
 
-        if (!subjectSections[subjectName]) {
-          const subjectSectionDiv = document.createElement("div");
-          subjectSectionDiv.className = "subject-section";
+      sortedSubjects.forEach(subjectName => {
+        const folderCard = document.createElement("div");
+        folderCard.className = "subject-folder-card";
+        folderCard.innerHTML = `<h3>${subjectName}</h3>`;
+        folderCard.onclick = () => openSubjectFolder(subjectName);
+        subjectListContainer.appendChild(folderCard);
+      });
+    }
 
-          const subjectHeader = document.createElement("h2");
-          subjectHeader.textContent = subjectName;
-          subjectHeader.onclick = () => toggleSubjectSection(subjectSectionDiv);
-          subjectSectionDiv.appendChild(subjectHeader);
+    // New function: Open a specific subject folder
+    function openSubjectFolder(subjectName) {
+      subjectListContainer.style.display = 'none';
+      folderContentContainer.style.display = 'block';
+      currentSubjectTitle.textContent = subjectName;
+      folderSearchInput.value = ''; // Clear search input when opening a new folder
 
-          const subjectContentDiv = document.createElement("div");
-          subjectContentDiv.className = "subject-content hidden";
-          subjectSectionDiv.appendChild(subjectContentDiv);
+      currentSubjectLecturesData = lecturesData.filter(lec => getSubjectName(lec.title) === subjectName);
+      renderLecturesInFolder(currentSubjectLecturesData);
+    }
 
-          lecturesContainer.appendChild(subjectSectionDiv);
-          subjectSections[subjectName] = subjectContentDiv;
-        }
+    // New function: Render lectures within a specific folder
+    function renderLecturesInFolder(lecturesToRender) {
+      currentSubjectLectures.innerHTML = '';
+      if (lecturesToRender.length === 0) {
+        currentSubjectLectures.innerHTML = '<p style="text-align: center; color: var(--subheading-color);">No lectures found in this category.</p>';
+        return;
+      }
 
+      lecturesToRender.forEach(lec => {
         const card = document.createElement("div");
         card.className = "lecture-card";
 
@@ -793,58 +841,23 @@
 
         card.appendChild(info);
         card.appendChild(btnGroup);
-        subjectSections[subjectName].appendChild(card);
+        currentSubjectLectures.appendChild(card);
       });
     }
 
-    // Search functionality
-    searchInput.addEventListener("input", (e) => {
-      const searchTerm = e.target.value.toLowerCase();
-      const allLectureCards = document.querySelectorAll(".lecture-card");
-
-      allLectureCards.forEach(card => {
-        const title = card.querySelector("h3").textContent.toLowerCase();
-        if (title.includes(searchTerm)) {
-          card.style.display = "flex";
-          const parentContent = card.closest('.subject-content');
-          if (parentContent && parentContent.classList.contains('hidden')) {
-            parentContent.classList.remove('hidden');
-            parentContent.previousElementSibling.classList.add('expanded');
-          }
-          const parentSection = card.closest('.subject-section');
-          if (parentSection) {
-            parentSection.style.display = "block";
-          }
-        } else {
-          card.style.display = "none";
-        }
-      });
-
-      document.querySelectorAll(".subject-section").forEach(section => {
-        const visibleCardsInThisSection = section.querySelectorAll(".lecture-card[style*='display: flex']").length;
-        if (visibleCardsInThisSection === 0 && searchTerm !== "") {
-          section.style.display = "none";
-        } else {
-          section.style.display = "block";
-          if (searchTerm === "") {
-            const content = section.querySelector(".subject-content");
-            const header = section.querySelector("h2");
-            if (!content.classList.contains("hidden")) {
-              content.classList.add("hidden");
-              header.classList.remove("expanded");
-            }
-          }
-        }
-      });
+    // Event listener for "Back to Subjects" button
+    backToSubjectsBtn.addEventListener('click', () => {
+      renderSubjectFolders(lecturesData); // Go back to the main subject list
     });
 
-    // Collapsible subject sections
-    function toggleSubjectSection(sectionDiv) {
-      const content = sectionDiv.querySelector(".subject-content");
-      const header = sectionDiv.querySelector("h2");
-      content.classList.toggle("hidden");
-      header.classList.toggle("expanded");
-    }
+    // Search functionality for lectures within a folder
+    folderSearchInput.addEventListener("input", (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const filteredLectures = currentSubjectLecturesData.filter(lec =>
+        lec.title.toLowerCase().includes(searchTerm)
+      );
+      renderLecturesInFolder(filteredLectures);
+    });
 
     const popup = document.getElementById("popupPlayer");
     const overlay = document.getElementById("popupOverlay");
@@ -944,4 +957,3 @@
   </script>
 </body>
 </html>
-
